@@ -1,0 +1,56 @@
+# Import your libraries
+import pandas as pd
+
+# Start writing code
+facebook_web_log.head()
+
+# find load and exit seperately 
+load = facebook_web_log.loc[facebook_web_log['action'] == 'page_load'][['user_id','timestamp']]
+exit = facebook_web_log.loc[facebook_web_log['action'] == 'page_exit'][['user_id','timestamp']]
+
+# join the two tables 
+df = pd.merge(load, exit, on = 'user_id', suffixes = ['_load','_exit'])
+df = df[df['timestamp_load'] < df['timestamp_exit']]
+
+# add a date column
+df['date'] = df['timestamp_load'].dt.date
+
+# make sure load and exit on the same day 
+## pandas agg() function is used to conduct custome aggregation rules 
+session = df.groupby(['user_id','date']).agg({'timestamp_load':'max',
+                                                'timestamp_exit':'min'}).reset_index()
+session
+
+# find session time 
+session['duration'] = session['timestamp_exit'] - session['timestamp_load']
+duration = session[['user_id','duration']]
+# datatype of 'duration' is timedelta
+
+# # # find the average by user
+duration.groupby(['user_id']).mean(numeric_only = False).reset_index()
+
+
+
+
+
+
+####################################################
+# Import your libraries
+import pandas as pd
+
+# Start writing code
+facebook_web_log.head()
+
+load = facebook_web_log.loc[facebook_web_log['action'] == 'page_load'][['user_id','timestamp']]
+exit = facebook_web_log.loc[facebook_web_log['action'] == 'page_exit'][['user_id','timestamp']]
+
+df = pd.merge(load, exit, on = 'user_id', suffixes = ['_load','_exit'])
+df = df[df['timestamp_load'] < df['timestamp_exit']]
+
+df['date'] = df['timestamp_load'].dt.date
+session = df.groupby(['user_id','date']).agg({'timestamp_load':'max',
+                                                'timestamp_exit':'min'}).reset_index()
+session
+
+session['duration'] = (session['timestamp_exit'] - session['timestamp_load']).dt.seconds
+session.groupby(['user_id']).mean().reset_index()
