@@ -1,1 +1,21 @@
-#
+# Import your libraries
+import pandas as pd
+
+# Start writing code
+amazon_transactions.head()
+
+# logic
+## find time difference between created_at 
+df = amazon_transactions[['user_id','created_at']].copy()
+df = df.sort_values('user_id')
+dup = df[df['user_id'].duplicated(keep = False)].sort_values(['user_id','created_at'])
+dup
+
+## --> whether within 7 days?
+dup['diffs'] = dup.groupby('user_id')['created_at'].diff().dt.days
+dup
+
+user = dup[dup['diffs'] <= 7]
+
+## list of user_ids of active users 
+user['user_id'].unique()
