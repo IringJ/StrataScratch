@@ -19,3 +19,19 @@ user = dup[dup['diffs'] <= 7]
 
 ## list of user_ids of active users 
 user['user_id'].unique()
+
+
+
+
+##################################
+### Solution 2: ###
+# Import your libraries
+import pandas as pd
+import numpy as np
+import datetime
+
+# Start writing code
+
+df = amazon_transactions.sort_values(['user_id','created_at'])
+df['diff'] = df.groupby('user_id')['created_at'].diff()
+df[df['diff'] <= pd.Timedelta(days=7)]['user_id'].unique()
