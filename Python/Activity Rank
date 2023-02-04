@@ -1,0 +1,19 @@
+# Import your libraries
+import pandas as pd
+
+# Start writing code
+google_gmail_emails.head()
+
+# goal:
+## find the email activity (total # of emails sent) rank for each user 
+
+# logic:
+## find total # of emails sent by each user
+df = google_gmail_emails.copy()
+df['count'] = 1
+df = df.groupby(['from_user']).sum().reset_index()
+
+## sort (desc) & rank (row_number) by # of emails 
+email = df[['from_user','count']].sort_values(['count','from_user'], ascending = [False, True])
+email['rank'] = email['count'].rank(method = 'first', ascending = False)
+email
