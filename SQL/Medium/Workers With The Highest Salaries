@@ -1,0 +1,19 @@
+# Info:
+Interview Question Date: June 2021
+DoorDash
+Medium
+Interview Questions
+ID 10353
+
+# Code
+select 
+    distinct worker_title best_paid_title 
+from 
+    worker w
+join 
+    title t on w.worker_id = t.worker_ref_id 
+where 
+    salary in (select 
+                    max(salary) 
+                from 
+                    worker)
